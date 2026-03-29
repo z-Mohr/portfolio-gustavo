@@ -1,75 +1,229 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gustavo Duarte Mohr | Portfólio</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Inter',sans-serif;background:#0b1120;color:#e5e7eb;}
-header{text-align:center;padding:60px 20px;background:radial-gradient(circle at top,#1e3a8a,#020617);}
-header img{width:140px;height:140px;border-radius:50%;border:3px solid #38bdf8;margin-bottom:20px;object-fit:cover;}
-h1{font-size:34px;}
-.subtitle{color:#94a3b8;margin-top:10px;}
-.btns{margin-top:20px;display:flex;justify-content:center;gap:10px;}
-.btn{padding:10px 18px;border-radius:8px;text-decoration:none;font-size:14px;}
-.primary{background:#38bdf8;color:#0b1120;font-weight:600;}
-.secondary{border:1px solid #334155;color:#cbd5f5;}
-section{max-width:1100px;margin:60px auto;padding:0 20px;}
-h2{color:#38bdf8;margin-bottom:20px;}
-.card{background:#020617;border:1px solid #1e293b;padding:20px;border-radius:12px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
-.timeline{border-left:2px solid #1e293b;padding-left:20px;}
-.timeline-item{margin-bottom:25px;}
-.skills span{display:inline-block;background:#1e293b;padding:6px 10px;margin:5px;border-radius:6px;font-size:13px;}
-footer{text-align:center;padding:40px;color:#64748b;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gustavo Duarte Mohr | Portfólio</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0b1120;
+      color: #e5e7eb;
+    }
+
+    header {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      text-align:center;
+      padding:60px 20px;
+      background: radial-gradient(circle at top, #1e3a8a, #020617);
+    }
+
+    header img {
+      width:140px;
+      height:140px;
+      border-radius:50%;
+      border:3px solid #38bdf8;
+      margin-bottom:20px;
+      object-fit: cover;
+      object-position: center 30%;
+    }
+
+    h1 { font-size:34px; font-weight:700; }
+    p.subtitle { color:#94a3b8; margin-top:10px; }
+
+    .btns {
+      margin-top:20px;
+      display:flex;
+      gap:10px;
+    }
+
+    .btn {
+      padding:10px 18px;
+      border-radius:8px;
+      text-decoration:none;
+      font-size:14px;
+      transition:0.3s;
+    }
+
+    .primary {
+      background:#38bdf8;
+      color:#0b1120;
+      font-weight:600;
+    }
+
+    .secondary {
+      border:1px solid #334155;
+      color:#cbd5f5;
+    }
+
+    section {
+      max-width:1100px;
+      margin:60px auto;
+      padding:0 20px;
+    }
+
+    h2 {
+      font-size:22px;
+      margin-bottom:20px;
+      color:#38bdf8;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(250px,1fr));
+      gap:20px;
+    }
+
+    .card {
+      background:#020617;
+      border:1px solid #1e293b;
+      padding:20px;
+      border-radius:12px;
+      transition:0.3s;
+    }
+
+    .card:hover {
+      transform:translateY(-5px);
+      border-color:#38bdf8;
+    }
+
+    ul { padding-left:20px; }
+
+    .timeline {
+      border-left:2px solid #1e293b;
+      padding-left:20px;
+    }
+
+    .timeline-item {
+      margin-bottom:25px;
+    }
+
+    .skills span {
+      display:inline-block;
+      background:#1e293b;
+      padding:6px 10px;
+      margin:5px;
+      border-radius:6px;
+      font-size:13px;
+    }
+
+    footer {
+      text-align:center;
+      padding:40px;
+      color:#64748b;
+      border-top:1px solid #1e293b;
+    }
+
+  </style>
 </head>
 <body>
 
 <header>
-<img src="foto.jpg">
-<h1>Gustavo Duarte Mohr</h1>
-<p class="subtitle">Estudante de Economia | Análise Financeira e Dados</p>
+  <img src="sua-foto.jpg" alt="Gustavo">
+  <h1>Gustavo Duarte Mohr</h1>
+  <p class="subtitle">Estudante de Economia | Foco em Análise Financeira, Dados e Mercado Financeiro</p>
 
-<div class="btns">
-<a href="Gustavo_Mohr_CV.pdf" class="btn primary" download>Baixar CV</a>
-<a href="https://www.linkedin.com/in/gustavomohrr" target="_blank" class="btn secondary">LinkedIn</a>
-</div>
+  <div class="btns">
+    <a href="Currículo Gustavo Duarte Mohr.pdf" class="btn primary" download>Baixar CV</a>
+    <a href="#" class="btn secondary">LinkedIn</a>
+  </div>
 </header>
 
 <section>
-<h2>Resumo Profissional</h2>
-<div class="card">
-<p>Graduando em Ciências Econômicas com experiência em rotinas financeiras, controle de fluxo de caixa e análise de dados.</p>
-</div>
+  <h2>Resumo Profissional</h2>
+  <div class="card">
+    <p>Graduando em Ciências Econômicas com experiência em rotinas financeiras, controle de fluxo de caixa e suporte administrativo. Possuo perfil analítico e foco em dados, com conhecimento em Excel, Python e indicadores econômicos. Busco oportunidade na área financeira para contribuir com análise, organização e suporte à tomada de decisão.</p>
+  </div>
 </section>
 
 <section>
-<h2>Competências</h2>
-<div class="skills">
-<span>Excel</span><span>Python</span><span>R</span>
-<span>Análise de Dados</span><span>Indicadores Econômicos</span>
-</div>
+  <h2>Competências Técnicas</h2>
+  <div class="skills">
+    <span>Excel (Intermediário)</span>
+    <span>Python (Básico)</span>
+    <span>R (Básico)</span>
+    <span>Análise de Dados</span>
+    <span>Indicadores Econômicos</span>
+    <span>Fluxo de Caixa</span>
+    <span>Contas a Pagar/Receber</span>
+    <span>Inteligência Artificial</span>
+  </div>
 </section>
 
 <section>
-<h2>Projetos</h2>
-<div class="grid">
-<div class="card">
-<h3>Dashboard Financeiro</h3>
-<p>Controle de fluxo de caixa com indicadores.</p>
-</div>
-<div class="card">
-<h3>Análise Econômica</h3>
-<p>Estudo de inflação e taxa Selic.</p>
-</div>
-</div>
+  <h2>Experiência</h2>
+  <div class="timeline">
+    <div class="timeline-item">
+      <h3>MasterSom</h3>
+      <p>Auxiliar Financeiro (2021 - 2022)</p>
+      <ul>
+        <li>Contas a pagar/receber</li>
+        <li>Faturamento e notas fiscais</li>
+        <li>Atendimento e suporte administrativo</li>
+      </ul>
+    </div>
+
+    <div class="timeline-item">
+      <h3>Instelar</h3>
+      <p>Assistente Financeiro (2022)</p>
+      <ul>
+        <li>Organização financeira</li>
+        <li>Controle de documentos</li>
+      </ul>
+    </div>
+
+    <div class="timeline-item">
+      <h3>Freelancer</h3>
+      <p>Designer (2022 - Atual)</p>
+      <ul>
+        <li>Gestão de clientes</li>
+        <li>Criação de materiais visuais</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Projetos Relevantes</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Análise de Indicadores Econômicos</h3>
+      <p>Estudo de inflação e taxa de juros utilizando dados públicos (IBGE e Banco Central), com interpretação de tendências e impactos econômicos.</p>
+    </div>
+
+    <div class="card">
+      <h3>Controle Financeiro em Excel</h3>
+      <p>Desenvolvimento de planilha para controle de fluxo de caixa, categorização de despesas e análise de resultados financeiros.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Formação</h2>
+  <div class="card">
+    <p>Ciências Econômicas - UNIOESTE (2022 - 2026)</p>
+  </div>
+</section>
+
+<section>
+  <h2>Contato</h2>
+  <div class="card">
+    <p>Email: gumohr005@gmail.com</p>
+    <p>Telefone: (49) 99902-6255</p>
+    <p>Local: Campo Erê - SC</p>
+  </div>
 </section>
 
 <footer>
-<p>© 2026 Gustavo Duarte Mohr</p>
+  <p>© 2026 Gustavo Duarte Mohr</p>
 </footer>
 
 </body>
