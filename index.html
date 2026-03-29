@@ -26,15 +26,47 @@
       background: radial-gradient(circle at top, #1e3a8a, #020617);
     }
 
-    header img {
-      width:200px;
-      height:200px;
-      border-radius:50%;
-      border:3px solid #38bdf8;
-      margin-bottom:20px;
+    .avatar {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .avatar::before {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      background: conic-gradient(#38bdf8, #6366f1, #22c55e, #38bdf8);
+      animation: spin 6s linear infinite;
+      z-index: 0;
+      filter: blur(6px);
+    }
+
+    .avatar img {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
       object-fit: cover;
       object-position: 50% 25%;
-      display: block;
+      z-index: 1;
+      border: 3px solid #0b1120;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      transition: transform 0.3s ease;
+    }
+
+    .avatar img:hover {
+      transform: scale(1.06);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     h1 { font-size:34px; font-weight:700; }
@@ -128,7 +160,9 @@
 <body>
 
 <header>
-  <img src="foto.jpg" alt="Gustavo">
+  <div class="avatar">
+    <img src="foto.jpg" alt="Gustavo">
+  </div>
   <h1>Gustavo Duarte Mohr</h1>
   <p class="subtitle">Estudante de Economia | Foco em Análise Financeira, Dados e Mercado Financeiro</p>
 
