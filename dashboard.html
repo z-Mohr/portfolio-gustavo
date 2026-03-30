@@ -26,7 +26,7 @@ h1 {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 15px;
     margin-bottom: 20px;
 }
@@ -55,18 +55,23 @@ h1 {
 
 <div class="grid">
     <div class="card">
-        <h3>Selic Atual</h3>
+        <h3>Selic</h3>
         <h2 id="selic">--</h2>
     </div>
 
     <div class="card">
-        <h3>Inflação Atual</h3>
+        <h3>IPCA (12M)</h3>
         <h2 id="ipca">--</h2>
     </div>
 
     <div class="card">
-        <h3>Média Selic</h3>
-        <h2 id="media">--</h2>
+        <h3>CDI (Anual)</h3>
+        <h2 id="cdi">--</h2>
+    </div>
+
+    <div class="card">
+        <h3>Dólar (PTAX)</h3>
+        <h2 id="dolar">--</h2>
     </div>
 </div>
 
@@ -78,7 +83,6 @@ h1 {
     <canvas id="graficoComparativo"></canvas>
 </div>
 
-<!-- 🔥 ANÁLISE AUTOMÁTICA -->
 <div class="card">
     <h3>Análise Econômica</h3>
     <p id="analise"></p>
@@ -93,44 +97,61 @@ let chart2;
 
 async function carregarDados() {
     try {
-        const selicRes = await fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados?formato=json");
-        const ipcaRes = await fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json");
+        const [selicRes, ipcaRes, cdiRes, dolarRes] = await Promise.all([
+            fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados?formato=json"),
+            fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json"),
+            fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json"),
+            fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json")
+        ]);
 
         const selicData = await selicRes.json();
         const ipcaData = await ipcaRes.json();
+        const cdiData = await cdiRes.json();
+        const dolarData = await dolarRes.json();
 
-        if (!selicData.length) throw "Erro";
+        // --- SELIC ---
+        const selicAtual = parseFloat(selicData.at(-1).valor);
 
-        const selic = selicData.slice(-24);
-        const ipca = ipcaData.slice(-24);
+        // --- IPCA 12 MESES (CORRETO) ---
+        const ultimos12 = ipcaData.slice(-12).map(d => parseFloat(d.valor));
+        let ipcaAcumulado = 1;
+        ultimos12.forEach(v => ipcaAcumulado *= (1 + v/100));
+        ipcaAcumulado = ((ipcaAcumulado - 1) * 100).toFixed(2);
 
-        const labels = selic.map(d => d.data);
-        const valoresSelic = selic.map(d => parseFloat(d.valor));
-        const valoresIpca = ipca.map(d => parseFloat(d.valor));
+        // --- CDI ANUALIZADO ---
+        const cdiAtual = (parseFloat(cdiData.at(-1).valor) * 252).toFixed(2);
 
-        atualizarKPIs(valoresSelic, valoresIpca);
-        criarGraficos(labels, valoresSelic, valoresIpca);
-        gerarAnalise(valoresSelic, valoresIpca);
+        // --- DÓLAR ---
+        const dolarAtual = parseFloat(dolarData.at(-1).valor).toFixed(2);
 
-    } catch {
-        console.log("Fallback ativado");
+        // --- GRÁFICOS ---
+        const labels = ipcaData.slice(-12).map(d => d.data);
+        const selicSerie = Array(12).fill(selicAtual);
+        const ipcaSerie = ultimos12;
+
+        atualizarKPIs(selicAtual, ipcaAcumulado, cdiAtual, dolarAtual);
+        criarGraficos(labels, selicSerie, ipcaSerie);
+        gerarAnalise(selicAtual, ipcaAcumulado);
+
+    } catch (erro) {
+        console.log("Erro API, fallback");
 
         const labels = ["Jan","Fev","Mar","Abr","Mai","Jun"];
-        const selic = [10.5,10.75,11,11.25,11.5,11.75];
-        const ipca = [4.5,4.7,4.9,5.1,5.0,4.8];
 
-        atualizarKPIs(selic, ipca);
-        criarGraficos(labels, selic, ipca);
-        gerarAnalise(selic, ipca);
+        atualizarKPIs(13.75, 4.5, 13.65, 5.10);
+        criarGraficos(labels,
+            [13.75,13.75,13.75,13.75,13.75,13.75],
+            [0.5,0.6,0.4,0.3,0.5,0.4]
+        );
+        gerarAnalise(13.75, 4.5);
     }
 }
 
-function atualizarKPIs(selic, ipca) {
-    document.getElementById("selic").innerText = selic.at(-1) + "%";
-    document.getElementById("ipca").innerText = ipca.at(-1) + "%";
-
-    const media = (selic.reduce((a,b)=>a+b,0)/selic.length).toFixed(2);
-    document.getElementById("media").innerText = media + "%";
+function atualizarKPIs(selic, ipca, cdi, dolar) {
+    document.getElementById("selic").innerText = selic + "%";
+    document.getElementById("ipca").innerText = ipca + "%";
+    document.getElementById("cdi").innerText = cdi + "%";
+    document.getElementById("dolar").innerText = "R$ " + dolar;
 }
 
 function criarGraficos(labels, selic, ipca) {
@@ -144,7 +165,7 @@ function criarGraficos(labels, selic, ipca) {
             labels: labels,
             datasets: [
                 { label: 'Selic (%)', data: selic, borderWidth: 2 },
-                { label: 'IPCA (%)', data: ipca, borderWidth: 2 }
+                { label: 'IPCA mensal (%)', data: ipca, borderWidth: 2 }
             ]
         }
     });
@@ -163,20 +184,17 @@ function criarGraficos(labels, selic, ipca) {
 
 function gerarAnalise(selic, ipca) {
 
-    let ultimaSelic = selic.at(-1);
-    let ultimaIpca = ipca.at(-1);
-
     let texto = "";
 
-    if (ultimaSelic > 10) {
-        texto += "A taxa Selic elevada indica uma política monetária restritiva. ";
+    if (selic > 10) {
+        texto += "Política monetária restritiva com taxa Selic elevada. ";
     }
 
-    if (ultimaIpca > 5) {
-        texto += "A inflação acima da meta sugere pressão inflacionária persistente. ";
+    if (ipca > 5) {
+        texto += "Inflação acima da meta do Banco Central. ";
     }
 
-    texto += "O cenário atual exige atenção na alocação de ativos e gestão de risco.";
+    texto += "Cenário exige cautela em investimentos e gestão de risco.";
 
     document.getElementById("analise").innerText = texto;
 }
