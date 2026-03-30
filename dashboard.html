@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Econômico</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    background: #0b1120;
+    color: #e5e7eb;
+    font-family: Arial;
+    margin: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #38bdf8;
+}
+
+.card {
+    background: #020617;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Dashboard Econômico - Brasil</h1>
+
+<div class="card">
+<canvas id="grafico"></canvas>
+</div>
+
+</div>
+
+<script>
+
+async function carregarDados() {
+
+    const selic = await fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados?formato=json");
+    const ipca = await fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json");
+
+    const dadosSelic = await selic.json();
+    const dadosIpca = await ipca.json();
+
+    const ultimosSelic = dadosSelic.slice(-12);
+    const ultimosIpca = dadosIpca.slice(-12);
+
+    const labels = ultimosSelic.map(d => d.data);
+
+    const valoresSelic = ultimosSelic.map(d => parseFloat(d.valor));
+    const valoresIpca = ultimosIpca.map(d => parseFloat(d.valor));
+
+    criarGrafico(labels, valoresSelic, valoresIpca);
+}
+
+function criarGrafico(labels, selic, ipca) {
+
+    new Chart(document.getElementById("grafico"), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Selic',
+                    data: selic,
+                    borderWidth: 2
+                },
+                {
+                    label: 'Inflação (IPCA)',
+                    data: ipca,
+                    borderWidth: 2
+                }
+            ]
+        }
+    });
+}
+
+carregarDados();
+
+</script>
+
+</body>
+</html>
