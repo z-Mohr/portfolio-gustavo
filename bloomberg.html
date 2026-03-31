@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Macro Terminal</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    background: #020617;
+    color: #e5e7eb;
+    font-family: 'Segoe UI';
+}
+
+.container {
+    max-width: 1300px;
+    margin: auto;
+    padding: 20px;
+}
+
+h1 {
+    color: #38bdf8;
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+}
+
+.card {
+    background: #0f172a;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.chart {
+    background: #0f172a;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>MACRO TERMINAL</h1>
+
+<div class="grid">
+    <div class="card"><h4>Selic</h4><h2 id="selic">--</h2></div>
+    <div class="card"><h4>IPCA 12M</h4><h2 id="ipca">--</h2></div>
+    <div class="card"><h4>CDI</h4><h2 id="cdi">--</h2></div>
+    <div class="card"><h4>Dólar</h4><h2 id="dolar">--</h2></div>
+    <div class="card"><h4>Correlação</h4><h2 id="corr">--</h2></div>
+</div>
+
+<div class="chart">
+    <canvas id="grafico1"></canvas>
+</div>
+
+<div class="chart">
+    <canvas id="grafico2"></canvas>
+</div>
+
+<div class="chart">
+    <canvas id="grafico3"></canvas>
+</div>
+
+<div class="card">
+    <h3>Macro Analysis</h3>
+    <p id="analise"></p>
+</div>
+
+</div>
+
+<script>
+
+function corr(x,y){
+    let n=x.length;
+    let sx=0, sy=0, sxy=0, sx2=0, sy2=0;
+    for(let i=0;i<n;i++){
+        sx+=x[i]; sy+=y[i];
+        sxy+=x[i]*y[i];
+        sx2+=x[i]*x[i];
+        sy2+=y[i]*y[i];
+    }
+    return (n*sxy - sx*sy)/Math.sqrt((n*sx2-sx*sx)*(n*sy2-sy*sy));
+}
+
+async function load(){
+
+try{
+
+const [s,i,c,d] = await Promise.all([
+fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados?formato=json"),
+fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json"),
+fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.12/dados?formato=json"),
+fetch("https://api.bcb.gov.br/dados/serie/bcdata.sgs.1/dados?formato=json")
+]);
+
+const selic = await s.json();
+const ipca = await i.json();
+const cdi = await c.json();
+const dolar = await d.json();
+
+const selicNow = parseFloat(selic.at(-1).valor);
+const dolarNow = parseFloat(dolar.at(-1).valor).toFixed(2);
+const cdiNow = (parseFloat(cdi.at(-1).valor)*252).toFixed(2);
+
+const ipca12 = ipca.slice(-12).map(x=>parseFloat(x.valor));
+let acc=1; ipca12.forEach(v=>acc*=1+v/100);
+const ipcaNow = ((acc-1)*100).toFixed(2);
+
+const selicSerie = selic.slice(-12).map(x=>parseFloat(x.valor));
+const dolarSerie = dolar.slice(-12).map(x=>parseFloat(x.valor));
+const ipcaSerie = ipca.slice(-12).map(x=>parseFloat(x.valor));
+
+const correl = corr(selicSerie,dolarSerie).toFixed(2);
+
+document.getElementById("selic").innerText = selicNow+"%";
+document.getElementById("ipca").innerText = ipcaNow+"%";
+document.getElementById("cdi").innerText = cdiNow+"%";
+document.getElementById("dolar").innerText = "R$ "+dolarNow;
+document.getElementById("corr").innerText = correl;
+
+const labels = ipca.slice(-12).map(x=>x.data);
+
+new Chart(grafico1,{
+type:'line',
+data:{labels,datasets:[
+{label:'Selic',data:selicSerie},
+{label:'IPCA',data:ipcaSerie}
+]}
+});
+
+new Chart(grafico2,{
+type:'bar',
+data:{labels,datasets:[
+{label:'IPCA',data:ipcaSerie}
+]}
+});
+
+new Chart(grafico3,{
+type:'line',
+data:{labels,datasets:[
+{label:'Dólar',data:dolarSerie}
+]}
+});
+
+let txt="";
+if(selicNow>10) txt+="Política monetária restritiva. ";
+if(ipcaNow>5) txt+="Inflação elevada. ";
+if(correl>0.5) txt+="Correlação forte entre juros e câmbio.";
+
+document.getElementById("analise").innerText = txt;
+
+}catch{
+
+document.getElementById("analise").innerText = "Erro ao carregar dados (modo offline).";
+
+}
+
+}
+
+load();
+
+</script>
+
+</body>
+</html>
